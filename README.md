@@ -1,6 +1,6 @@
 # Weather Radar Animation
 
-This Python script downloads radar images of weather conditions in Perth (Plans to incorporate all capital cities of Australia) and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv and deletes the GIF after playback.
+This Python script downloads radar images of weather conditions in Perth (Plans to incorporate all capital cities of Australia) and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv.
 
 ## Example Output
 ![Example](https://0x0.st/H8D2.gif)

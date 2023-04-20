@@ -24,7 +24,6 @@ def download_image(url, output_folder):
 
 # Function to combine multiple images with different dimensions
 def combine_images(image_filenames):
-    # Get the size of the largest image
     max_size = (0, 0)
     for filename in image_filenames:
         with Image.open(filename) as img:
@@ -104,7 +103,6 @@ os.makedirs(combined_output_folder, exist_ok=True)
 # Load the combined background image
 background = Image.open(combined_background_filename)
 
-# List to store the combined images
 combined_images = []
 
 # Iterate through the downloaded radar images, overlay them on the background, and save the combined images

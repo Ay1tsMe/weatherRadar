@@ -3,7 +3,7 @@
 This Python script downloads radar images of weather conditions for Australian capital cities and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv.
 
 ## Example Output
-![Example](https://0x0.st/H8D2.gif)
+![Example](https://0x0.st/H85L.gif)
 
 ## Requirements
 ```bash

@@ -2,6 +2,8 @@
 
 This Python script downloads radar images of weather conditions for Australian capital cities and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv.
 
+<!--I have realised scraping bom.gov.au is prohibited. In the meantime, I am working on changing the code to access their resources from their ftp server. -->
+
 ## Example Output
 ![Example](https://0x0.st/H85L.gif)
 

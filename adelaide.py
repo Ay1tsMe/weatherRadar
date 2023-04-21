@@ -6,10 +6,10 @@ from utils import *
 # URLs for the background images
 background_image_urls = [
     "http://www.bom.gov.au/products/radar_transparencies/IDR.legend.0.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR703.background.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR703.topography.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR703.locations.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR703.range.png",
+    "http://www.bom.gov.au/products/radar_transparencies/IDR643.background.png",
+    "http://www.bom.gov.au/products/radar_transparencies/IDR643.topography.png",
+    "http://www.bom.gov.au/products/radar_transparencies/IDR643.locations.png",
+    "http://www.bom.gov.au/products/radar_transparencies/IDR643.range.png",
 ]
 
 # Download the background images and save them to the "background_images" folder
@@ -27,7 +27,7 @@ background.save(combined_background_filename)
 
 
 # Set the URL of the webpage containing the images
-urlImages = "http://www.bom.gov.au/products/IDR703.loop.shtml"
+urlImages = "http://www.bom.gov.au/products/IDR643.loop.shtml"
 
 # Set the output folder for downloaded images
 output_folder = "downloaded_images"
@@ -44,7 +44,7 @@ soupImages = BeautifulSoup(responseImages.content, "html.parser")
 script_element = soupImages.find("script", string=re.compile(r"theImageNames\[\d\]"))
 
 # Extract the image names using a regular expression
-image_names = re.findall(r'/radar/IDR703\.T\.\d{12}\.png', script_element.string)
+image_names = re.findall(r'/radar/IDR643\.T\.\d{12}\.png', script_element.string)
 
 # Download the images and save them as individual files
 for index, image_name in enumerate(image_names):

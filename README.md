@@ -1,6 +1,6 @@
-# Weather Radar Animation
+# Weather Radar
 
-This Python script downloads radar images of weather conditions in Perth (Plans to incorporate all capital cities of Australia) and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv.
+This Python script downloads radar images of weather conditions for Australian capital cities and combines them with a set of background images to create an animated GIF. It also plays the GIF in mpv.
 
 ## Example Output
 ![Example](https://0x0.st/H8D2.gif)
@@ -28,13 +28,18 @@ pip install -r requirements.txt
 3. (**Optional**: if you want to run the output in mpv.) Install mpv. Refer to [this page](https://mpv.io/installation/) for installation instructions for your operating system.
 
 ## Usage
-1. Run the script using the following command:
+1. Run the script using the following command (replace sydney with city of choice):
+```bash
+python weatherRadar.py sydney
 ```
-python perth.py
+For more information on how to use the script:
+```bash
+python weatherRadar.py -h
 ```
-The script will download radar images from the Bureau of Meteorology website and save them in the downloaded_images folder. It will then combine the radar images with a set of background images and save the combined images as a GIF in the combined_images folder. (Plans to make the directories temporary so that don't save to storage.)
 
-The animated GIF will be played using mpv, a media player that can be installed on most Linux distributions. If you don't want to use mpv or youw ant to use some other way to view to the output, just change this line:
+The script will download radar images from the Bureau of Meteorology website and save them in the downloaded_images folder. It will then combine the radar images with a set of background images and save the combined images as a GIF in the combined_images folder. **(Plans to make the directories temporary so that don't save to storage.)**
+
+The animated GIF will be played using mpv, a media player that can be installed on most Linux distributions. If you don't want to use mpv or you want to use some other tool to view to the output, just change this line in the `city.py`:
 ```python
 subprocess.run(["mpv", "--loop=inf", gif_output_path])
 ```
@@ -42,13 +47,8 @@ subprocess.run(["mpv", "--loop=inf", gif_output_path])
 ## Notes
 The animated GIF duration is set to 300ms per frame, but you can adjust it in the script. 
 ```python
-combined_images[0].save(
-    gif_output_path,
-    save_all=True,
-    append_images=combined_images[1:],
-    duration=300, # Edit this variable.
-    loop=0,
-)
+durations = [300] * len(combined_images) # Adjust this line.
+durations[-1] = 1000 # Adjust this line for duration of last frame.
 ```
 ## License
 This script is licensed under the MIT License. See the LICENSE file for more information.

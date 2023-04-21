@@ -4,9 +4,12 @@ import importlib
 from utils import *
 
 def main(cities):
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+
     for city in cities:
         module_name = city.lower()
-        filename = module_name + ".py"
+        filename = os.path.join(file_dir, module_name + ".py")
+        
 
         if os.path.isfile(filename):
             importlib.import_module(module_name)

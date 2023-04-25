@@ -2,6 +2,7 @@
 background_images/
 combined_images/
 downloaded_images/
+output.gif
 
 # Ignore Python Cache
 __pycache__/

@@ -1,107 +1,107 @@
 import re
 import subprocess
-from bs4 import BeautifulSoup
+import shutil
+from ftplib import FTP
 from utils import *
 
-# URLs for the background images
-background_image_urls = [
-    "http://www.bom.gov.au/products/radar_transparencies/IDR.legend.0.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR643.background.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR643.topography.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR643.locations.png",
-    "http://www.bom.gov.au/products/radar_transparencies/IDR643.range.png",
-]
+# Set up folder locations
+folders = {
+    "background_images": "background_images",
+    "downloaded_images": "downloaded_images",
+    "combined_images": "combined_images"
+}
 
-# Download the background images and save them to the "background_images" folder
-background_image_folder = "background_images"
-os.makedirs(background_image_folder, exist_ok=True)
+for folder in folders.values():
+    os.makedirs(folder, exist_ok=True)
 
-background_image_filenames = [download_image(url, background_image_folder) for url in background_image_urls]
+# Set the FTP server URL and connect to it
+ftp_server_url = "ftp.bom.gov.au"
+ftp_directory = "/anon/gen/radar/"
+ftp_transparencies_directory = "/anon/gen/radar_transparencies"
 
-# Combine the background images into a single image
-background = combine_images(background_image_filenames)
+# Connect to the FTP server and change the directory
+ftp = FTP(ftp_server_url)
+ftp.login()
+print("Connected to ftp.bom.gov.au")
 
-# Save the combined background image
-combined_background_filename = os.path.join(background_image_folder, "combined_background.png")
-background.save(combined_background_filename)
+# Download radar images
+ftp.cwd(ftp_directory)
 
+# List the files in the directory and filter only the .png files
+file_list = []
+ftp.retrlines("LIST", file_list.append)
 
-# Set the URL of the webpage containing the images
-urlImages = "http://www.bom.gov.au/products/IDR643.loop.shtml"
-
-# Set the output folder for downloaded images
-output_folder = "downloaded_images"
-os.makedirs(output_folder, exist_ok=True)
-
-# Send an HTTP request to get the content of the webpage
-responseImages = requests.get(urlImages, headers=headers)
-responseImages.raise_for_status()
-
-# Parse the HTML content using BeautifulSoup
-soupImages = BeautifulSoup(responseImages.content, "html.parser")
-
-# Find the script containing the image names
-script_element = soupImages.find("script", string=re.compile(r"theImageNames\[\d\]"))
-
-# Extract the image names using a regular expression
-image_names = re.findall(r'/radar/IDR643\.T\.\d{12}\.png', script_element.string)
+# Use a regular expression to filter the desired files
+desired_files_pattern = r"IDR643\.T\.\d{12}\.png"
+png_files = [f.split()[-1] for f in file_list if f.endswith(".png") and re.match(desired_files_pattern, f.split()[-1])]
 
 # Download the images and save them as individual files
-for index, image_name in enumerate(image_names):
-    img_src = f"http://www.bom.gov.au{image_name}"
-    img_response = requests.get(img_src, headers=headers)
-    img_response.raise_for_status()
+for index, png_file in enumerate(png_files):
+    img_data = bytearray()
+    ftp.retrbinary(f"RETR {png_file}", img_data.extend)
 
     # Save the image to the output folder
-    img_filename = os.path.join(output_folder, f"image{index + 1}.png")
+    img_filename = os.path.join(folders["downloaded_images"], f"image{index + 1}.png")
     with open(img_filename, "wb") as img_file:
-        img_file.write(img_response.content)
+        img_file.write(img_data)
 
-    print(f"Downloaded image {index + 1}: {img_src}")
+    print(f"Downloaded image {index + 1}: {png_file}")
 
-# Set the output folder for the combined images
-combined_output_folder = "combined_images"
-os.makedirs(combined_output_folder, exist_ok=True)
+# Download transparency images
+ftp.cwd(ftp_transparencies_directory)
 
-# Load the combined background image
-background = Image.open(combined_background_filename)
+# List the files and filter only the .png files
+file_list = []
+ftp.retrlines("LIST", file_list.append)
 
-combined_images = []
+# Specify the files you want to download
+desired_background_files = [
+    "IDR643.background.png",
+    "IDR643.topography.png",
+    "IDR643.locations.png",
+    "IDR643.range.png",
+]
 
-# Iterate through the downloaded radar images, overlay them on the background, and save the combined images
-for index in range(len(image_names)):
-    radar_image_path = os.path.join(output_folder, f"image{index + 1}.png")
-    radar_image = Image.open(radar_image_path).convert("RGBA")
-    
-    # Create a new blank image with the same size as the background
-    combined_image = Image.new("RGBA", background.size)
-    
-    # Paste the background and radar image onto the new image
-    combined_image.paste(background, (0, 0))
-    combined_image.paste(radar_image, (0, 0), radar_image)
-    
-    # Convert the combined image to RGB mode and save it
-    combined_image = combined_image.convert("RGB")
-    combined_image_path = os.path.join(combined_output_folder, f"combined_image{index + 1}.png")
-    combined_image.save(combined_image_path)
-    
-    combined_images.append(combined_image)
+# Filter the file list to only include the desired files
+transparency_files = [f.split()[-1] for f in file_list if f.endswith(".png") and f.split()[-1] in desired_background_files]
 
-# Create a list of durations for each frame
-durations = [300] * len(combined_images)
-durations[-1] = 1000
+# Download the transparency images and save them as individual files
+for transparency_file in transparency_files:
+    img_data = bytearray()
+    ftp.retrbinary(f"RETR {transparency_file}", img_data.extend)
 
-# Save the combined images as a GIF
-gif_output_path = os.path.join(combined_output_folder, "combined_images.gif")
-combined_images[0].save(
-    gif_output_path,
-    save_all=True,
-    append_images=combined_images[1:],
-    duration=durations,
-    loop=0,
-)
+    # Save the image to the output folder
+    img_filename = os.path.join(folders["background_images"], transparency_file)
+    with open(img_filename, "wb") as img_file:
+        img_file.write(img_data)
 
-print(f"Combined images saved as a GIF: {gif_output_path}")
+    print(f"Downloaded transparency image: {transparency_file}")
+
+ftp.quit()
+
+# Combine and save background images
+background_image_filenames = [os.path.join(folders["background_images"], f) for f in desired_background_files]
+background_image = combine_images(background_image_filenames)
+background_image_filename = os.path.join(folders["combined_images"], "combined_background.png")
+background_image.save(background_image_filename)
+
+# Create a GIF with transparent images placed on top of the background image
+transparent_image_filenames = [os.path.join(folders["downloaded_images"], f) for f in os.listdir(folders["downloaded_images"]) if f.endswith(".png")]
+transparent_image_filenames.sort(key=sort_key)
+
+sequence_images = create_gif_sequence_images(transparent_image_filenames, background_image)
+durations = [250] * (len(sequence_images) - 1) + [1000]
+
+# Save the GIF in the combined_images folder
+gif_filename = os.path.join("output.gif")
+sequence_images[0].save(gif_filename, save_all=True, append_images=sequence_images[1:], duration=durations, loop=0)
+
+print(f"Combined background image saved as: {background_image_filename}")
+print(f"Combined GIF saved as: {gif_filename}")
+
+#Delete folders
+for folder in folders.values():
+    shutil.rmtree(folder)
 
 # Run the GIF in mpv and wait for it to finish
-subprocess.run(["mpv", "--loop=inf", gif_output_path])
+subprocess.run(["mpv", "--loop=inf", gif_filename])

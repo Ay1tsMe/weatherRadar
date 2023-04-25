@@ -1,0 +1,7 @@
+# Ignore Image Folders
+background_images/
+combined_images/
+downloaded_images/
+
+# Ignore Python Cache
+__pycache__/

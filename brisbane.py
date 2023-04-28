@@ -92,8 +92,10 @@ transparent_image_filenames.sort(key=sort_key)
 sequence_images = create_gif_sequence_images(transparent_image_filenames, background_image)
 durations = [250] * (len(sequence_images) - 1) + [1000]
 
+script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+
 # Save the GIF in the combined_images folder
-gif_filename = os.path.join("output.gif")
+gif_filename = os.path.join(script_directory, "output.gif")
 sequence_images[0].save(gif_filename, save_all=True, append_images=sequence_images[1:], duration=durations, loop=0)
 
 print(f"Combined background image saved as: {background_image_filename}")

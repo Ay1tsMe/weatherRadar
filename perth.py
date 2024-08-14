@@ -107,4 +107,5 @@ for folder in folders.values():
     shutil.rmtree(folder)
 
 # Run the GIF in mpv and wait for it to finish
-subprocess.run(["mpv", "--loop=inf", gif_filename])
+# subprocess.run(["mpv", "--loop=inf", gif_filename])
+subprocess.run(["imv", gif_filename])

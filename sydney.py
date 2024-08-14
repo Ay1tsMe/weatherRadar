@@ -105,5 +105,5 @@ print(f"Combined GIF saved as: {gif_filename}")
 for folder in folders.values():
     shutil.rmtree(folder)
 
-# Run the GIF in mpv and wait for it to finish
-subprocess.run(["mpv", "--loop=inf", gif_filename])
+# Run the GIF in imv and wait for it to finish
+subprocess.run(["imv", gif_filename])

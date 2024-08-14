@@ -10,7 +10,7 @@ This Python script downloads radar images of weather conditions for Australian c
 Python 3.x
 requests library
 Pillow library
-imv (if you don't have imv, change last line in each `city.py`` file with the program of choice)
+imv (if you don't have imv, change last line in each `city.py` file with the program of choice)
 ```
 ## Installation
 1. Clone this repository and open the directory.
